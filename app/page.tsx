@@ -20,11 +20,7 @@ import { useTheme } from "next-themes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  defaultPortfolioContent,
-  parsePortfolioContent,
-  portfolioStorageKey,
-} from "@/lib/portfolio-data";
+import { defaultPortfolioContent } from "@/lib/portfolio-data";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -72,19 +68,13 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState<string>("home");
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
-  const [portfolioContent, setPortfolioContent] = useState(defaultPortfolioContent);
   const { theme, setTheme } = useTheme();
+  const portfolioContent = defaultPortfolioContent;
 
   const sectionIds = useMemo(() => navItems.map((item) => item.id), []);
 
   useEffect(() => {
     setMounted(true);
-    const savedContent = parsePortfolioContent(
-      window.localStorage.getItem(portfolioStorageKey),
-    );
-    if (savedContent) {
-      setPortfolioContent(savedContent);
-    }
   }, []);
 
   useEffect(() => {
@@ -158,6 +148,7 @@ export default function Home() {
               <a
                 key={item.id}
                 href={`#${item.id}`}
+                onClick={() => setActiveSection(item.id)}
                 className={cn(
                   "rounded-full px-3 py-2 text-sm whitespace-nowrap transition-colors",
                   activeSection === item.id
@@ -186,12 +177,12 @@ export default function Home() {
 
       <main className="mx-auto flex w-full max-w-5xl flex-col gap-24 px-4 pb-20 pt-36 md:gap-28">
         <Section id="home" title="Home">
-          <div className="mt-8 grid gap-10 md:grid-cols-[1.2fr_0.8fr] md:items-start">
-            <div className="space-y-6">
+          <div className="mt-8 grid gap-10 md:grid-cols-[1fr_0.95fr] md:items-start">
+            <div className="space-y-6 md:pr-4">
               <p className="text-sm font-medium uppercase tracking-[0.22em] text-[var(--muted-foreground)]">
                 Pradhumn Singh Tomar
               </p>
-              <h1 className="max-w-2xl text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
+              <h1 className="max-w-xl text-4xl font-semibold leading-tight tracking-tight md:text-5xl lg:text-6xl">
                 {portfolioContent.heroTitle}
               </h1>
               <p className="max-w-2xl text-base leading-8 text-[var(--muted-foreground)] md:text-lg">
@@ -226,12 +217,12 @@ export default function Home() {
               </div>
             </div>
 
-            <Card className="p-6 md:p-7">
+            <Card className="p-7 md:p-8">
               <h3 className="text-lg font-semibold">About</h3>
               {portfolioContent.about.map((paragraph) => (
                 <p
                   key={paragraph}
-                  className="mt-3 text-sm leading-7 text-[var(--muted-foreground)]"
+                  className="mt-4 text-base leading-8 text-[var(--muted-foreground)]"
                 >
                   {paragraph}
                 </p>

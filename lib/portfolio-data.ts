@@ -34,8 +34,6 @@ export type PortfolioContent = {
   education: Education[];
 };
 
-export const portfolioStorageKey = "portfolio-admin-content-v1";
-
 export const defaultPortfolioContent: PortfolioContent = {
   heroTitle:
     "Full Stack Web Developer building scalable platforms and AI-powered product experiences.",
@@ -77,7 +75,7 @@ export const defaultPortfolioContent: PortfolioContent = {
       ],
       github: "https://github.com/ThakurPradhumnSinghTomar/Clarity",
       live: "https://rebuild-with-pradhumn.vercel.app/",
-      image: "/projects/rebuild.svg",
+      image: "https://github.com/user-attachments/assets/76d77aa3-076b-49de-83b1-3ab0433d7bea",
       featured: true,
     },
     {
@@ -96,7 +94,7 @@ export const defaultPortfolioContent: PortfolioContent = {
       ],
       github: "https://github.com/ThakurPradhumnSinghTomar/PrepWise",
       live: "https://prep-wise-phi-gray.vercel.app/",
-      image: "/projects/prepwise.svg",
+      image: "https://github.com/user-attachments/assets/f7fac506-0925-4806-976f-f1f9aeebf6be",
       featured: true,
     },
   ],
@@ -145,33 +143,3 @@ export const defaultPortfolioContent: PortfolioContent = {
     },
   ],
 };
-
-function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === "string");
-}
-
-export function parsePortfolioContent(rawValue: string | null): PortfolioContent | null {
-  if (!rawValue) return null;
-
-  try {
-    const parsed = JSON.parse(rawValue) as Partial<PortfolioContent>;
-
-    if (
-      typeof parsed.heroTitle !== "string" ||
-      typeof parsed.heroSummary !== "string" ||
-      typeof parsed.location !== "string" ||
-      !isStringArray(parsed.about) ||
-      !Array.isArray(parsed.experiences) ||
-      !Array.isArray(parsed.projects) ||
-      typeof parsed.skills !== "object" ||
-      parsed.skills === null ||
-      !Array.isArray(parsed.education)
-    ) {
-      return null;
-    }
-
-    return parsed as PortfolioContent;
-  } catch {
-    return null;
-  }
-}
