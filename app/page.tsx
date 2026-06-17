@@ -8,12 +8,12 @@ import {
   ArrowUpRight,
   Download,
   GitFork,
-  Linkedin,
   Mail,
   MapPin,
   Moon,
   Phone,
   Sun,
+  UserRound,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -211,7 +211,7 @@ export default function Home() {
     {
       label: "LinkedIn",
       href: "https://www.linkedin.com/in/pradhumn-singh-tomar-601104296/",
-      icon: Linkedin,
+      icon: UserRound,
     },
     {
       label: "Email",
