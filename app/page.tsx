@@ -20,6 +20,11 @@ import { useTheme } from "next-themes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  defaultPortfolioContent,
+  parsePortfolioContent,
+  portfolioStorageKey,
+} from "@/lib/portfolio-data";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -30,101 +35,6 @@ const navItems = [
   { id: "education", label: "Education" },
   { id: "contact", label: "Contact" },
 ] as const;
-
-const experiences = [
-  {
-    company: "Paleru Technologies Ltd. — Praccel",
-    role: "Full Stack Developer Intern",
-    duration: "May 2026 — Present",
-    description:
-      "Contributed across frontend and backend systems to improve platform scalability, reliability, and delivery velocity.",
-    achievements: [
-      "Optimized Django REST APIs and relational database schemas through indexing and query refinements, reducing response times for core modules.",
-      "Built and integrated full-stack features with React.js frontend and Django backend, including real-time WebSocket-driven collaboration.",
-      "Resolved production bugs across frontend and backend systems and partnered with senior engineers during code reviews and sprint planning.",
-    ],
-  },
-];
-
-const projects = [
-  {
-    title: "Rebuild — Student Productivity Platform",
-    description:
-      "Engineered a full-stack productivity platform with secure authentication, robust APIs, and real-time collaboration workflows.",
-    tech: [
-      "Next.js",
-      "Express.js",
-      "Prisma",
-      "MongoDB",
-      "Socket.IO",
-      "WebRTC",
-      "Turborepo",
-      "Firebase Messaging",
-    ],
-    github: "https://github.com/ThakurPradhumnSinghTomar/Clarity",
-    live: "https://rebuild-with-pradhumn.vercel.app/",
-    image: "/projects/rebuild.svg",
-    featured: true,
-  },
-  {
-    title: "PrepWise — AI Mock Interview Platform",
-    description:
-      "Built an AI-powered interview simulation platform with automated scoring, interview history, and low-latency voice workflows.",
-    tech: [
-      "Next.js",
-      "React",
-      "TypeScript",
-      "Firebase",
-      "Gemini API",
-      "Vapi SDK",
-      "Zod",
-      "Tailwind CSS",
-    ],
-    github: "https://github.com/ThakurPradhumnSinghTomar/PrepWise",
-    live: "https://prep-wise-phi-gray.vercel.app/",
-    image: "/projects/prepwise.svg",
-    featured: true,
-  },
-];
-
-const skills = {
-  Frontend: [
-    "React.js",
-    "Next.js",
-    "HTML",
-    "CSS",
-    "Tailwind CSS",
-    "Framer Motion",
-  ],
-  Backend: ["Node.js", "Express.js", "Django", "REST APIs", "JWT", "OAuth"],
-  Databases: ["MongoDB", "MySQL", "PostgreSQL", "Prisma ORM"],
-  "Cloud & DevOps": [
-    "Git",
-    "GitHub",
-    "Docker",
-    "Firebase",
-    "AWS",
-    "Kubernetes",
-    "Vercel",
-    "CI/CD",
-  ],
-  "AI & Integrations": [
-    "OpenAI API",
-    "Gemini Provider SDK",
-    "AI SDK",
-    "Vapi Web SDK",
-  ],
-  Tools: ["Socket.IO", "WebSockets", "WebRTC", "Redis", "Turborepo", "Zod"],
-};
-
-const education = [
-  {
-    degree: "B.Tech in Information Technology (Specialization in AI & Robotics)",
-    institute: "Madhav Institute of Technology and Science, Gwalior",
-    duration: "2023 — 2027",
-    cgpa: "CGPA: 7.9 / 10",
-  },
-];
 
 const sectionFade = {
   hidden: { opacity: 0, y: 22 },
@@ -162,13 +72,22 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState<string>("home");
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [portfolioContent, setPortfolioContent] = useState(defaultPortfolioContent);
   const { theme, setTheme } = useTheme();
 
   const sectionIds = useMemo(() => navItems.map((item) => item.id), []);
 
   useEffect(() => {
     setMounted(true);
+    const savedContent = parsePortfolioContent(
+      window.localStorage.getItem(portfolioStorageKey),
+    );
+    if (savedContent) {
+      setPortfolioContent(savedContent);
+    }
+  }, []);
 
+  useEffect(() => {
     const updateScrollProgress = () => {
       const pageHeight = document.documentElement.scrollHeight - window.innerHeight;
       const value = pageHeight > 0 ? (window.scrollY / pageHeight) * 100 : 0;
@@ -273,18 +192,14 @@ export default function Home() {
                 Pradhumn Singh Tomar
               </p>
               <h1 className="max-w-2xl text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
-                Full Stack Web Developer building scalable platforms and
-                AI-powered product experiences.
+                {portfolioContent.heroTitle}
               </h1>
               <p className="max-w-2xl text-base leading-8 text-[var(--muted-foreground)] md:text-lg">
-                I design and ship full-stack applications with backend
-                reliability, real-time collaboration, and AI integrations.
-                I focus on building performant products that solve meaningful
-                user problems.
+                {portfolioContent.heroSummary}
               </p>
               <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--muted-foreground)]">
                 <span className="inline-flex items-center gap-1">
-                  <MapPin className="size-4" /> Gwalior, MP
+                  <MapPin className="size-4" /> {portfolioContent.location}
                 </span>
               </div>
               <div className="flex flex-wrap gap-3">
@@ -313,23 +228,21 @@ export default function Home() {
 
             <Card className="p-6 md:p-7">
               <h3 className="text-lg font-semibold">About</h3>
-              <p className="mt-3 text-sm leading-7 text-[var(--muted-foreground)]">
-                I am a B.Tech IT student specializing in AI & Robotics, focused
-                on full-stack product engineering, backend systems, and
-                AI-assisted workflows.
-              </p>
-              <p className="mt-3 text-sm leading-7 text-[var(--muted-foreground)]">
-                My work emphasizes robust APIs, secure authentication, and
-                real-time user experiences powered by practical AI
-                integrations.
-              </p>
+              {portfolioContent.about.map((paragraph) => (
+                <p
+                  key={paragraph}
+                  className="mt-3 text-sm leading-7 text-[var(--muted-foreground)]"
+                >
+                  {paragraph}
+                </p>
+              ))}
             </Card>
           </div>
         </Section>
 
         <Section id="experience" title="Experience">
           <div className="mt-8 border-l border-[var(--border)] pl-6">
-            {experiences.map((item) => (
+            {portfolioContent.experiences.map((item) => (
               <motion.div
                 key={item.company}
                 className="relative mb-10"
@@ -368,7 +281,7 @@ export default function Home() {
 
         <Section id="projects" title="Projects">
           <div className="mt-8 grid gap-6 md:grid-cols-2">
-            {projects.map((project) => (
+            {portfolioContent.projects.map((project) => (
               <motion.div
                 key={project.title}
                 whileHover={{ y: -5 }}
@@ -421,7 +334,7 @@ export default function Home() {
 
         <Section id="skills" title="Skills">
           <div className="mt-8 grid gap-5 md:grid-cols-2">
-            {Object.entries(skills).map(([category, items]) => (
+            {Object.entries(portfolioContent.skills).map(([category, items]) => (
               <Card key={category} className="p-5">
                 <h3 className="text-base font-semibold">{category}</h3>
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -436,7 +349,7 @@ export default function Home() {
 
         <Section id="education" title="Education">
           <div className="mt-8 grid gap-5">
-            {education.map((item) => (
+            {portfolioContent.education.map((item) => (
               <Card key={item.degree} className="p-6">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
